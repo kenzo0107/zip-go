@@ -1,0 +1,29 @@
+name: lint
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    types:
+      - opened
+      - synchronize
+      - reopened
+
+jobs:
+  lint:
+    timeout-minutes: 5
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Pick golang_version
+        id: golang
+        run: echo ::set-output name=version::$(awk '{print $2}' .tool-versions)
+
+      - uses: actions/setup-go@v5
+        with:
+          go-version: ${{ steps.golang.outputs.version }}
+
+      - run: make lint
